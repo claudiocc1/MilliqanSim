@@ -1,6 +1,11 @@
 #! /usr/bin/env python
 
-import cPickle as pickle
+from __future__ import print_function 
+
+try:
+    import cPickle as pickle
+except:
+    import pickle
 import sys
 import time
 import numpy as np
@@ -8,33 +13,39 @@ import matplotlib.pyplot as plt
 
 startTime = time.time()
 
+pyVersion = sys.version_info[0]
+
 z = np.arange(-1500, 1500+1e-10, 10)
 x = np.arange(-900, 900+1e-10, 10)
 
 Z,X = np.meshgrid(z,x)
 
 #Bx, By, Bz, Bmag = pickle.load(open("bfield.pkl","rb"))   
-#Bmag = pickle.load(open("bfield_mag.pkl","rb"))   
-Bx,By,Bz,Bmag = pickle.load(open("bfield_coarse.pkl","rb"))   
+#Bmag = pickle.load(open("bfield_mag.pkl","rb"))
+if pyVersion == 2:
+    Bx,By,Bz,Bmag = pickle.load(open("bfield_coarse.pkl","rb"))
+else:
+    Bx,By,Bz,Bmag = pickle.load(open("bfield_coarse_p3.pkl","rb"))
 
-print "loaded pickle file ({0:.2f} s)".format(time.time()-startTime)
+print("loaded pickle file ({0:.2f} s)".format(time.time()-startTime))
 
 Bx = np.array(Bx)
 By = np.array(By)
 Bz = np.array(Bz)
 Bmag = np.array(Bmag)
 
-print Bmag.shape
-print np.amin(Bmag), np.amax(Bmag)
+print(Bmag.shape)
+print(np.amin(Bmag), np.amax(Bmag))
 
-print "converted to numpy array ({0:.2f} s)".format(time.time()-startTime)
+print("converted to numpy array ({0:.2f} s)".format(time.time()-startTime))
 
-Bx   = np.append(  Bx[::-1,:,0],  Bx[1:,:,180/5],0)
-By   = np.append(  By[::-1,:,0],  By[1:,:,180/5],0)
-Bz   = np.append(  Bz[::-1,:,0],  Bz[1:,:,180/5],0)
-Bmag = np.append(Bmag[::-1,:,0],Bmag[1:,:,180/5],0)
+Bx   = np.append(  Bx[::-1,:,0],  Bx[1:,:,int(180/5)],0)
+By   = np.append(  By[::-1,:,0],  By[1:,:,int(180/5)],0)
+Bz   = np.append(  Bz[::-1,:,0],  Bz[1:,:,int(180/5)],0)
+Bmag = np.append(Bmag[::-1,:,0],Bmag[1:,:,int(180/5)],0)
 
-print "flattened to 2D array ({0:.2f} s)".format(time.time()-startTime)
+print("flattened to 2D array ({0:.2f} s)".format(time.time()-startTime))
+print(Bmag)
 
 plt.figure(num=1, figsize=(11.7,7))
 bmplot = plt.pcolor(Z,X,Bmag,cmap='bone', vmax = 4.0, vmin = 0.0)
@@ -44,7 +55,7 @@ bmcb.set_label('B (T)',fontsize=14)
 plt.xlabel('z (cm)',fontsize=14)
 plt.ylabel('x (cm)',fontsize=14)
 
-print np.min(Bmag[-1,-1])
+print(np.min(Bmag[-1,-1]))
 
 k=3
 #plt.quiver(Z[::k,::k],X[::k,::k],Bz[::k,::k],Bx[::k,::k], width=0.001, color='k')
@@ -63,7 +74,7 @@ plt.savefig('cms_bfield_coarse.png', bbox_inches='tight')
 
 # plt.savefig('cms_bfield_coarse.png')
 
-print "saved as png ({0:.2f} s)".format(time.time()-startTime)
+print("saved as png ({0:.2f} s)".format(time.time()-startTime))
 
 # fig = plt.figure(num=2, figsize=(11.7,7))
 # byplot = plt.pcolor(Z,X,Bx, cmap='RdYlGn',vmin=-2.0,vmax=2.0)
