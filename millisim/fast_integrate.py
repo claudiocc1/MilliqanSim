@@ -310,7 +310,7 @@ def _get_b(x, y, z, B):
         nearPHI = 0
 
     iz = int( (nearZ-ZMIN)/DZ )
-    iphi = int( nearPHI-PHIMIN)/DPHI )
+    iphi = int( (nearPHI-PHIMIN)/DPHI )
     
     ir = r/DR
     irlow = int(np.floor(ir))
