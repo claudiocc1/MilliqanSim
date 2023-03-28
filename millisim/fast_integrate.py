@@ -309,8 +309,8 @@ def _get_b(x, y, z, B):
     if nearPHI==360:
         nearPHI = 0
 
-    iz = (nearZ-ZMIN)/DZ
-    iphi = (nearPHI-PHIMIN)/DPHI
+    iz = int( (nearZ-ZMIN)/DZ )
+    iphi = int( nearPHI-PHIMIN)/DPHI )
     
     ir = r/DR
     irlow = int(np.floor(ir))
