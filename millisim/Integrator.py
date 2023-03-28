@@ -1,9 +1,10 @@
 # Integrator.py
 # contains a class to perform the numeric integration/propagation
 
+from __future__ import print_function 
 import numpy as np
-from Environment import Environment
-import MatterInteraction as mi
+from millisim.Environment import Environment
+import millisim.MatterInteraction as mi
 _LOADED_FAST = False
 try:
     import fast_integrate
@@ -171,8 +172,8 @@ class Integrator(object):
             if isStopped:
                 x[3:,i+1] *= 0
                 if not self.suppress_stopped_warn:
-                    print "Warning: stopped particle! (initial p ={0:.2f}, at r = {1:.2f})".format(
-                        np.linalg.norm(x[3:,0])/1000, np.linalg.norm(x[:3,i+1]))
+                    print("Warning: stopped particle! (initial p ={0:.2f}, at r = {1:.2f})".format(
+                        np.linalg.norm(x[3:,0])/1000, np.linalg.norm(x[:3,i+1])))
                 return x[:,:i+2], tvec[:i+2]
         
             if self.cutoff_dist is not None:
@@ -187,6 +188,6 @@ class Integrator(object):
 
         
         if self.cutoff_dist is not None:
-            print "Warning: cutoff not reached!"
+            print("Warning: cutoff not reached!")
 
         return x, tvec

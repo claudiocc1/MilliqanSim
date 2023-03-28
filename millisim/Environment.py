@@ -1,7 +1,10 @@
 ## Detector.py
 ## methods relating to detector and environment properties
 
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except:
+    import pickle
 import numpy as np
 
 class Environment(object):
@@ -104,9 +107,15 @@ class Environment(object):
     
     def LoadCoarseBField(self, fname, usePickle=True):
 
+        # Claudio: added self.Bmag_cc because it looks like
+        # Drawing.py wants to have Bmag but it smells like
+        # that is obsolete.  I add it with a "_cc" suffix
+        # here and in Drawing.py so that if any other piece
+        # of code needs it, it will crash and I will know
         if usePickle:
             Bx,By,Bz,Bmag = pickle.load(open(fname,"rb"))
             self.B = np.stack((Bx,By,Bz),3)
+            self.Bmag_cc = np.array(Bmag)  # the np.array is from Bfield.py
             self.BFieldLoaded = True
             return
 
@@ -248,8 +257,8 @@ class Environment(object):
                 if nearPHI==360:
                     nearPHI = 0
 
-                iz = (nearZ-ZMIN)/DZ
-                iphi = (nearPHI-PHIMIN)/DPHI
+                iz = int( (nearZ-ZMIN)/DZ )
+                iphi = int( (nearPHI-PHIMIN)/DPHI )
 
                 ir = r/DR
                 irlow = int(np.floor(ir))

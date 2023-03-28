@@ -24,6 +24,7 @@
 ## The above variables are somewhat obscure and were used for testing/debugging.
 ## To get more useful variables, run the tools/formatOutput.py script.
 
+from __future__ import print_function 
 import math
 import time
 import os.path
@@ -49,17 +50,22 @@ if mode=="STATS":
     # the total number of trajectories simulated will be greater
     ntrajs = rp.ntrajs
     trajs = []
-    print "Simulating {0} hits on the detector.".format(ntrajs)
-    print 
+    print("Simulating {0} hits on the detector.".format(ntrajs))
+    print(' ')
 visWithStats = False
 
 if mode=="STATS":
-    print "Outputting to "+outname
+    print("Outputting to "+outname)
 
+pyVersion = sys.version_info[0]
+if pyVersion == 2:
+    bFile = "../bfield/bfield_coarse.pkl"
+else:
+    bFile = "../bfield/bfield_coarse_p3.pkl"
 env = Environment(
     mat_setup = 'cms',
     bfield = rp.bfield_type,
-    bfield_file = "../bfield/bfield_coarse.pkl",
+    bfield_file = bFile,
     rock_begins = rp.rock_begins,
     rock_ends = rp.distToDetector-0.10,
     mat_function = rp.matFunction if rp.useCustomMaterialFunction else None
@@ -134,7 +140,7 @@ if mode=="STATS":
             if rp.useCustomOutput:
                 txtfile2 = open(outnameCustom, 'w')
         else:
-            print "OK, appending"
+            print("OK, appending")
             txtfile = open(outname,'a')
             if rp.useCustomOutput:
                 txtfile2 = open(outnameCustom, 'a')
@@ -190,7 +196,7 @@ while len(trajs)<ntrajs:
     bar_intersects.append(mdet.find_entries_exits(traj, assume_straight_line=True))
     if idict is not None:
         intersects.append((len(trajs)-1,idict["x_int"]))
-        print len(trajs), ": p =",magp, ", eta =", eta, ", phi =", phi, ", eff =", float(len(intersects))/ntotaltrajs
+        print(len(trajs), ": p =",magp, ", eta =", eta, ", phi =", phi, ", eff =", float(len(intersects))/ntotaltrajs)
         if mode=="VIS":
             pass
         elif mode=="STATS":
@@ -213,9 +219,9 @@ while len(trajs)<ntrajs:
 
 endtime = time.time()
 
-print "Efficiency:", float(len(intersects))/ntotaltrajs
-print "Total time: {0:.2f} sec".format(endtime-starttime)
-print "Time/Hit: {0:.2f} sec".format((endtime-starttime)/ntrajs)
+print("Efficiency:", float(len(intersects))/ntotaltrajs)
+print("Total time: {0:.2f} sec".format(endtime-starttime))
+print("Time/Hit: {0:.2f} sec".format((endtime-starttime)/ntrajs))
 
 mt.Write("output_data/output_{0}.root".format(suffix))
 

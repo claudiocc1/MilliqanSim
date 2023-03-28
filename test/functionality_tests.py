@@ -4,21 +4,28 @@
 ## the b-field propagation, multiple scattering, and energy loss
 ## are all behaving as expected
 
+from __future__ import print_function 
 import numpy as np
 import matplotlib.pyplot as plt
 from millisim.Environment import Environment
 from millisim.Integrator import Integrator
 from millisim.Detector import *
 import millisim.Drawing as Drawing
+import sys
 try:
     from tqdm import tqdm
 except ImportError:
     tqdm = lambda x:x
 
+pyVersion = sys.version_info[0]
+if pyVersion == 2:
+    bFile = "../bfield/bfield_coarse.pkl"
+else:
+    bFile = "../bfield/bfield_coarse_p3.pkl"
 env = Environment(
     mat_setup="cms", 
     bfield="cms", 
-    bfield_file="../bfield/bfield_coarse.pkl", 
+    bfield_file=bFile, 
     rock_begins=17.0
     )
 
@@ -46,7 +53,7 @@ det = PlaneDetector(
 )
 
 # generate a few random trajectories and visualize
-print "Propagating a few random muon trajectories through CMS environment to visualize..."
+print("Propagating a few random muon trajectories through CMS environment to visualize...")
 trajs = []
 intersects = []
 for i in tqdm(range(15)):
@@ -62,11 +69,15 @@ for i in tqdm(range(15)):
     traj,_ = itg.propagate(x0)
 
     trajs.append(traj)
-    intersects.append(det.FindIntersection(traj))
+    ## Claudio: 25 March 2023 ... this is a bug?
+    ##  intersects.append(det.FindIntersection(traj))
+    intersects.append(det.find_intersection(traj))
 
 plt.figure(figsize=(15,7))
 Drawing.Draw3Dtrajs(trajs, subplot=121)
-c1,c2,c3,c4 = det.GetCorners()
+## Claudio: 25 March 2023 ... this is a bug?
+# c1,c2,c3,c4 = det.GetCorners()
+c1,c2,c3,c4 = det.get_corners()
 Drawing.DrawLine(c1,c2,is3d=True)
 Drawing.DrawLine(c2,c3,is3d=True)
 Drawing.DrawLine(c3,c4,is3d=True)
@@ -81,7 +92,7 @@ plt.figure(figsize=(11.7,7))
 Drawing.DrawXZslice(trajs, drawBFieldFromEnviron=env, drawColorbar=True)
 #plt.savefig("test.png", bbox_inches='tight')
 
-print "Propagating muons through blocks of silicon/iron to test Bethe-Bloch energy loss..."
+print("Propagating muons through blocks of silicon/iron to test Bethe-Bloch energy loss...")
 # test dE/dx energy loss
 env.bfield = None
 env.mat_setup = 'sife'
@@ -99,7 +110,7 @@ plt.ylabel("Momentum (GeV/c)")
 plt.legend()
 
 # plot multiple scattering through iron
-print "Propagating muons through 20m solid iron to visualize multiple scattering..."
+print("Propagating muons through 20m solid iron to visualize multiple scattering...")
 env.bfield = None
 env.mat_setup = 'unif_fe'
 itg.do_energy_loss = False
@@ -112,7 +123,7 @@ plt.ylabel("Transverse displacement (m)")
 plt.legend()
 
 # histogram deviation from multiple scattering through 2m of iron
-print "Propagating many muons through 2m iron to histogram deviation due to multiple scattering..."
+print("Propagating many muons through 2m iron to histogram deviation due to multiple scattering...")
 env.bfield = None
 env.mat_setup = 'unif_fe'
 itg.do_energy_loss = False
@@ -121,7 +132,7 @@ itg.dt = 0.1
 plt.figure()
 for p0,c in zip([3000,5000,7000,10000],list("rgbc")):
     devs = []
-    print "Momentum:", p0, "MeV"
+    print("Momentum:", p0, "MeV")
     for i in tqdm(range(200)):
         traj,_ = itg.propagate([0,0,0,p0,0,0])
         devs.append(np.linalg.norm(traj[1:3,-1]) * 100)

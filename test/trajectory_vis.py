@@ -6,6 +6,7 @@
 ##   -"XY" slice - looking at CMS from the endcap. Get classic S-shape trajectories
 ##   - 3D view - a rotatable 3D visualization of the trajectories
 
+from __future__ import print_function 
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,10 +15,15 @@ from millisim.Environment import Environment
 from millisim.Integrator import Integrator
 import millisim.Drawing as Drawing
 
+pyVersion = sys.version_info[0]
+if pyVersion == 2:
+    bFile = "../bfield/bfield_coarse.pkl"
+else:
+    bFile = "../bfield/bfield_coarse_p3.pkl"
 env = Environment(
     mat_setup = 'cms',  # use very simple model of CMS material setup
     bfield = 'cms',     # use CMS b field
-    bfield_file = "../bfield/bfield_coarse.pkl",
+    bfield_file = bFile,
     )
 
 itg = Integrator(
@@ -40,9 +46,9 @@ init_p.append([10000*np.cos(30*np.pi/180),0,10000*np.sin(30*np.pi/180)])
 init_p.append([20000*np.cos(40*np.pi/180),0,20000*np.sin(40*np.pi/180)])
 
 colors = ['r', 'g', 'b', 'c', 'm']
-print 'Initial Momenta (colors r,g,b,c):'
+print('Initial Momenta (colors r,g,b,c):')
 for i in range(len(init_p)):
-    print ' -',round(np.linalg.norm(init_p[i])/1000, 1), "GeV"
+    print(' -',round(np.linalg.norm(init_p[i])/1000, 1), "GeV")
 
 # compute trajectories. Each trajectory is a 2D numpy array,
 # where the first dimension contains (x,y,z,px,py,pz),

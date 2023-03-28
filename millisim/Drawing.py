@@ -3,7 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from Environment import Environment
+from millisim.Environment import Environment
 
 ## 3d view
 
@@ -97,7 +97,7 @@ def DrawXZslice(trajs, colors=None, ax=None, fig=None, subplot=111, drawBFieldFr
         z = np.arange(env.ZMIN, env.ZMAX+1e-10, env.DZ)/100
         Z,X = np.meshgrid(z,x)
 
-        mag = np.append(env.Bmag[::-1,:,0],env.Bmag[1:,:,180/env.DPHI],0)
+        mag = np.append(env.Bmag_cc[::-1,:,0],env.Bmag_cc[1:,:,int(180/env.DPHI)],0)
         bmplot = plt.pcolor(Z,X,mag,cmap='afmhot', vmax = 4.0, vmin = 0.0)
         
         if drawColorbar:
