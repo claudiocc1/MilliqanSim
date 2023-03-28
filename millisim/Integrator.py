@@ -7,7 +7,7 @@ from millisim.Environment import Environment
 import millisim.MatterInteraction as mi
 _LOADED_FAST = False
 try:
-    import fast_integrate
+    import millisim.fast_integrate as fast_integrate
     _LOADED_FAST = True
 except:
     pass
